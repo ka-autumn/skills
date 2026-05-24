@@ -1,63 +1,63 @@
-# CONTEXT.md Format
+# CONTEXT.md フォーマット
 
-## Structure
-
-```md
-# {Context Name}
-
-{One or two sentence description of what this context is and why it exists.}
-
-## Language
-
-**Order**:
-{A one or two sentence description of the term}
-_Avoid_: Purchase, transaction
-
-**Invoice**:
-A request for payment sent to a customer after delivery.
-_Avoid_: Bill, payment request
-
-**Customer**:
-A person or organization that places orders.
-_Avoid_: Client, buyer, account
-```
-
-## Rules
-
-- **Be opinionated.** When multiple words exist for the same concept, pick the best one and list the others as aliases to avoid.
-- **Flag conflicts explicitly.** If a term is used ambiguously, call it out in "Flagged ambiguities" with a clear resolution.
-- **Keep definitions tight.** One or two sentences max. Define what it IS, not what it does.
-- **Show relationships.** Use bold term names and express cardinality where obvious.
-- **Only include terms specific to this project's context.** General programming concepts (timeouts, error types, utility patterns) don't belong even if the project uses them extensively. Before adding a term, ask: is this a concept unique to this context, or a general programming concept? Only the former belongs.
-- **Group terms under subheadings** when natural clusters emerge. If all terms belong to a single cohesive area, a flat list is fine.
-- **Write an example dialogue.** A conversation between a dev and a domain expert that demonstrates how the terms interact naturally and clarifies boundaries between related concepts.
-
-## Single vs multi-context repos
-
-**Single context (most repos):** One `CONTEXT.md` at the repo root.
-
-**Multiple contexts:** A `CONTEXT-MAP.md` at the repo root lists the contexts, where they live, and how they relate to each other:
+## 構成
 
 ```md
-# Context Map
+# {コンテキスト名}
 
-## Contexts
+{このコンテキストが何であり、なぜ存在するのかを 1〜2 文で説明。}
 
-- [Ordering](./src/ordering/CONTEXT.md) — receives and tracks customer orders
-- [Billing](./src/billing/CONTEXT.md) — generates invoices and processes payments
-- [Fulfillment](./src/fulfillment/CONTEXT.md) — manages warehouse picking and shipping
+## 用語
 
-## Relationships
+**Order(注文)**:
+{用語の 1〜2 文の説明}
+_避ける_: Purchase、Transaction
 
-- **Ordering → Fulfillment**: Ordering emits `OrderPlaced` events; Fulfillment consumes them to start picking
-- **Fulfillment → Billing**: Fulfillment emits `ShipmentDispatched` events; Billing consumes them to generate invoices
-- **Ordering ↔ Billing**: Shared types for `CustomerId` and `Money`
+**Invoice(請求書)**:
+納品後に顧客に送付される、支払いの請求。
+_避ける_: Bill、支払い依頼
+
+**Customer(顧客)**:
+注文を行う個人または組織。
+_避ける_: Client、Buyer、Account
 ```
 
-The skill infers which structure applies:
+## ルール
 
-- If `CONTEXT-MAP.md` exists, read it to find contexts
-- If only a root `CONTEXT.md` exists, single context
-- If neither exists, create a root `CONTEXT.md` lazily when the first term is resolved
+- **断定的であること。** 同じ概念に複数の言葉が存在する場合、最適な一つを選び、他は避けるべき別名として列挙してください。
+- **衝突は明示的にフラグを立てる。** 用語が曖昧に使われている場合、「フラグ付き曖昧性」セクションで明確な解決策とともに指摘してください。
+- **定義は引き締める。** 1〜2 文まで。何で「ある」かを定義し、何を「する」かではありません。
+- **関係性を示す。** 用語名を太字にし、自明な箇所では多重度を表現してください。
+- **このプロジェクトの文脈に固有の用語のみを含める。** 一般的なプログラミング概念(タイムアウト、エラー型、ユーティリティパターンなど)は、たとえプロジェクトで広く使われていても含めません。用語を追加する前に問いかけてください: これはこのコンテキスト固有の概念か、それとも一般的なプログラミング概念か? 前者だけが該当します。
+- **自然なクラスターが現れたら見出しでグループ化する。** すべての用語が一つのまとまった領域に属するなら、平坦なリストで構いません。
+- **会話例を書く。** 用語が自然にどう相互作用するかを示し、関連概念の境界を明確にする、開発者とドメインエキスパートの会話例を書いてください。
 
-When multiple contexts exist, infer which one the current topic relates to. If unclear, ask.
+## 単一コンテキスト vs 複数コンテキストのリポジトリ
+
+**単一コンテキスト(ほとんどのリポジトリ):** リポジトリのルートに一つの `CONTEXT.md`。
+
+**複数コンテキスト:** ルートの `CONTEXT-MAP.md` がコンテキストの一覧、所在、相互の関係を示します:
+
+```md
+# コンテキストマップ
+
+## コンテキスト
+
+- [Ordering](./src/ordering/CONTEXT.md) — 顧客の注文を受け付け、追跡する
+- [Billing](./src/billing/CONTEXT.md) — 請求書を生成し、支払いを処理する
+- [Fulfillment](./src/fulfillment/CONTEXT.md) — 倉庫でのピッキングと出荷を管理する
+
+## 関係
+
+- **Ordering → Fulfillment**: Ordering が `OrderPlaced` イベントを発行し、Fulfillment がそれを購読してピッキングを開始
+- **Fulfillment → Billing**: Fulfillment が `ShipmentDispatched` イベントを発行し、Billing がそれを購読して請求書を生成
+- **Ordering ↔ Billing**: `CustomerId` と `Money` の共有型
+```
+
+スキルはどの構成が該当するかを推論します:
+
+- `CONTEXT-MAP.md` が存在すれば、それを読んでコンテキストを見つける
+- ルートに `CONTEXT.md` のみが存在すれば、単一コンテキスト
+- どちらも存在しなければ、最初の用語が確定したときにルートの `CONTEXT.md` を遅延作成する
+
+複数コンテキストが存在する場合、現在の話題がどれに関連するかを推論してください。不明な場合は質問してください。
