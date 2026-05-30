@@ -1,83 +1,83 @@
 ---
 name: to-issues
-description: Break a plan, spec, or PRD into independently-grabbable issues on the project issue tracker using tracer-bullet vertical slices. Use when user wants to convert a plan into issues, create implementation tickets, or break down work into issues.
+description: 計画・仕様・PRD を、tracer-bullet（vertical slice）方式で、プロジェクトの Issue トラッカー上の単独で着手可能な Issue 群に分解する。計画を Issue に変換したい、実装チケットを作成したい、作業を Issue 単位に分解したい場合に使用。
 ---
 
-# To Issues
+# Issue 化（to-issues）
 
-Break a plan into independently-grabbable issues using vertical slices (tracer bullets).
+計画を、vertical slice（tracer bullet）方式で単独で着手可能な Issue 群に分解する。
 
-The issue tracker and triage label vocabulary should have been provided to you — run `/setup-matt-pocock-skills` if not.
+Issue トラッカーとトリアージラベルの語彙は、すでに提供されているはずです — まだの場合は `/setup-matt-pocock-skills` を実行してください。
 
-## Process
+## 手順
 
-### 1. Gather context
+### 1. コンテキストを収集する
 
-Work from whatever is already in the conversation context. If the user passes an issue reference (issue number, URL, or path) as an argument, fetch it from the issue tracker and read its full body and comments.
+会話のコンテキストにすでにある情報をもとに作業してください。ユーザーが Issue の参照（Issue 番号、URL、パス）を引数として渡した場合は、Issue トラッカーから取得し、本文とコメントの全文を読んでください。
 
-### 2. Explore the codebase (optional)
+### 2. コードベースを探索する（任意）
 
-If you have not already explored the codebase, do so to understand the current state of the code. Issue titles and descriptions should use the project's domain glossary vocabulary, and respect ADRs in the area you're touching.
+まだコードベースを探索していない場合は、コードの現状を把握するために探索してください。Issue のタイトルと説明は、プロジェクトのドメイン用語集の語彙を使い、変更対象の領域の ADR を尊重すること。
 
-### 3. Draft vertical slices
+### 3. vertical slice の草案を作成する
 
-Break the plan into **tracer bullet** issues. Each issue is a thin vertical slice that cuts through ALL integration layers end-to-end, NOT a horizontal slice of one layer.
+計画を **tracer bullet** Issue に分解してください。各 Issue は、すべての統合レイヤーを端から端まで貫く薄い vertical slice であり、単一レイヤーの horizontal slice ではありません。
 
-Slices may be 'HITL' or 'AFK'. HITL slices require human interaction, such as an architectural decision or a design review. AFK slices can be implemented and merged without human interaction. Prefer AFK over HITL where possible.
+スライスは「HITL」または「AFK」のいずれかになります。HITL スライスは、アーキテクチャ上の決定や設計レビューなど、人間の関与を必要とします。AFK スライスは、人間の関与なしに実装・マージできます。可能な限り HITL より AFK を優先してください。
 
 <vertical-slice-rules>
-- Each slice delivers a narrow but COMPLETE path through every layer (schema, API, UI, tests)
-- A completed slice is demoable or verifiable on its own
-- Prefer many thin slices over few thick ones
+- 各スライスは、すべてのレイヤー（スキーマ、API、UI、テスト）を貫く、狭いが**完結した**経路を提供すること
+- 完成したスライスは、それ単独でデモまたは検証が可能であること
+- 厚いスライスを少数より、薄いスライスを多数にすることを優先すること
 </vertical-slice-rules>
 
-### 4. Quiz the user
+### 4. ユーザーに確認する
 
-Present the proposed breakdown as a numbered list. For each slice, show:
+提案する分解案を番号付きリストで提示してください。各スライスについて、以下を提示してください:
 
-- **Title**: short descriptive name
-- **Type**: HITL / AFK
-- **Blocked by**: which other slices (if any) must complete first
-- **User stories covered**: which user stories this addresses (if the source material has them)
+- **タイトル**: 短い説明的な名前
+- **種別**: HITL / AFK
+- **Blocked by**: 先に完了している必要がある他のスライス（あれば）
+- **カバーするユーザーストーリー**: このスライスが対応するユーザーストーリー（元資料にある場合）
 
-Ask the user:
+ユーザーに次を質問してください:
 
-- Does the granularity feel right? (too coarse / too fine)
-- Are the dependency relationships correct?
-- Should any slices be merged or split further?
-- Are the correct slices marked as HITL and AFK?
+- 粒度は適切か?（粗すぎる／細かすぎる）
+- 依存関係は正しいか?
+- 統合または分割すべきスライスはあるか?
+- HITL と AFK の振り分けは正しいか?
 
-Iterate until the user approves the breakdown.
+ユーザーが分解案を承認するまで繰り返してください。
 
-### 5. Publish the issues to the issue tracker
+### 5. Issue を Issue トラッカーに公開する
 
-For each approved slice, publish a new issue to the issue tracker. Use the issue body template below. These issues are considered ready for AFK agents, so publish them with the correct triage label unless instructed otherwise.
+承認された各スライスについて、新しい Issue を Issue トラッカーに公開してください。下記の Issue 本文テンプレートを使います。これらの Issue は AFK エージェント向けに準備が整ったものとみなされるため、特に指示がない限り、正しいトリアージラベルを付けて公開すること。
 
-Publish issues in dependency order (blockers first) so you can reference real issue identifiers in the "Blocked by" field.
+Issue は依存順（ブロック元を先に）で公開してください。そうすれば「Blocked by」フィールドで実際の Issue 識別子を参照できます。
 
 <issue-template>
 ## Parent
 
-A reference to the parent issue on the issue tracker (if the source was an existing issue, otherwise omit this section).
+Issue トラッカー上の親 Issue への参照（元が既存の Issue だった場合。そうでなければこのセクションは省略する）。
 
 ## What to build
 
-A concise description of this vertical slice. Describe the end-to-end behavior, not layer-by-layer implementation.
+この vertical slice の簡潔な説明。レイヤーごとの実装ではなく、端から端までの振る舞いを記述する。
 
-Avoid specific file paths or code snippets — they go stale fast. Exception: if a prototype produced a snippet that encodes a decision more precisely than prose can (state machine, reducer, schema, type shape), inline it here and note briefly that it came from a prototype. Trim to the decision-rich parts — not a working demo, just the important bits.
+具体的なファイルパスやコードスニペットは避ける — すぐに陳腐化する。例外: プロトタイプが、散文よりも正確に決定を表現するスニペット（ステートマシン、リデューサー、スキーマ、型の形状）を生み出した場合は、ここにインラインで挿入し、プロトタイプ由来であることを簡潔に書き添える。決定の本質部分に絞ること — 動くデモではなく、重要な部分だけにする。
 
 ## Acceptance criteria
 
-- [ ] Criterion 1
-- [ ] Criterion 2
-- [ ] Criterion 3
+- [ ] 基準 1
+- [ ] 基準 2
+- [ ] 基準 3
 
 ## Blocked by
 
-- A reference to the blocking ticket (if any)
+- ブロック元チケットへの参照（あれば）
 
-Or "None - can start immediately" if no blockers.
+ブロック元がなければ「None - can start immediately」（なし — すぐに着手可能）。
 
 </issue-template>
 
-Do NOT close or modify any parent issue.
+親 Issue は決してクローズも変更もしないでください。
