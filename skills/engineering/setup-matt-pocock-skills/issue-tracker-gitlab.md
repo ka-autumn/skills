@@ -1,23 +1,23 @@
-# Issue tracker: GitLab
+# Issue トラッカー：GitLab
 
-Issues and PRDs for this repo live as GitLab issues. Use the [`glab`](https://gitlab.com/gitlab-org/cli) CLI for all operations.
+このリポジトリの Issue と PRD は GitLab の Issue として存在する。すべての操作で [`glab`](https://gitlab.com/gitlab-org/cli) CLI を使うこと。
 
-## Conventions
+## 規約
 
-- **Create an issue**: `glab issue create --title "..." --description "..."`. Use a heredoc for multi-line descriptions. Pass `--description -` to open an editor.
-- **Read an issue**: `glab issue view <number> --comments`. Use `-F json` for machine-readable output.
-- **List issues**: `glab issue list -F json` with appropriate `--label` filters.
-- **Comment on an issue**: `glab issue note <number> --message "..."`. GitLab calls comments "notes".
-- **Apply / remove labels**: `glab issue update <number> --label "..."` / `--unlabel "..."`. Multiple labels can be comma-separated or by repeating the flag.
-- **Close**: `glab issue close <number>`. `glab issue close` does not accept a closing comment, so post the explanation first with `glab issue note <number> --message "..."`, then close.
-- **Merge requests**: GitLab calls PRs "merge requests". Use `glab mr create`, `glab mr view`, `glab mr note`, etc. — the same shape as `gh pr ...` with `mr` in place of `pr` and `note`/`--message` in place of `comment`/`--body`.
+- **Issue を作成する**：`glab issue create --title "..." --description "..."`。複数行の説明には ヒアドキュメント を使う。エディタを開くには `--description -` を渡す。
+- **Issue を参照する**：`glab issue view <number> --comments`。機械可読な出力には `-F json` を使う。
+- **Issue の一覧を表示する**：`glab issue list -F json`。適切な `--label` フィルタを付ける。
+- **Issue にコメントする**：`glab issue note <number> --message "..."`。GitLab はコメントを "notes" と呼ぶ。
+- **Issue にラベルを付与／削除する**：`glab issue update <number> --label "..."` / `--unlabel "..."`。複数のラベルはカンマ区切り、またはフラグの繰り返しで指定できる。
+- **Issue をクローズする**：`glab issue close <number>`。`glab issue close` はクローズ時のコメントを受け付けないため、先に `glab issue note <number> --message "..."` で説明を投稿してからクローズする。
+- **マージリクエスト**：GitLab は PR を "merge requests" と呼ぶ。`glab mr create`、`glab mr view`、`glab mr note` などを使う — `gh pr ...` と同じ形で、`pr` の代わりに `mr`、`comment`/`--body` の代わりに `note`/`--message` を使う。
 
-Infer the repo from `git remote -v` — `glab` does this automatically when run inside a clone.
+リポジトリは `git remote -v` から推測する — clone 内で実行すれば `glab` が自動で行う。
 
-## When a skill says "publish to the issue tracker"
+## スキルが「Issue トラッカーに公開する」と言ったとき
 
-Create a GitLab issue.
+GitLab の Issue を作成する。
 
-## When a skill says "fetch the relevant ticket"
+## スキルが「対象のチケットを取得する」と言ったとき
 
-Run `glab issue view <number> --comments`.
+`glab issue view <number> --comments` を実行する。

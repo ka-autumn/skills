@@ -1,15 +1,15 @@
-# Triage Labels
+# トリアージラベル
 
-The skills speak in terms of five canonical triage roles. This file maps those roles to the actual label strings used in this repo's issue tracker.
+スキルは、5 つの標準的なトリアージロールに基づいて動作する。このファイルは、それらのロールを、このリポジトリの Issue トラッカーで実際に使うラベル文字列に対応づける。
 
-| Label in mattpocock/skills | Label in our tracker | Meaning                                  |
+| mattpocock/skills でのラベル | このトラッカーでのラベル | 意味 |
 | -------------------------- | -------------------- | ---------------------------------------- |
-| `needs-triage`             | `needs-triage`       | Maintainer needs to evaluate this issue  |
-| `needs-info`               | `needs-info`         | Waiting on reporter for more information |
-| `ready-for-agent`          | `ready-for-agent`    | Fully specified, ready for an AFK agent  |
-| `ready-for-human`          | `ready-for-human`    | Requires human implementation            |
-| `wontfix`                  | `wontfix`            | Will not be actioned                     |
+| `needs-triage`             | `needs-triage`       | メンテナがこの Issue を評価する必要がある |
+| `needs-info`               | `needs-info`         | 報告者からの追加情報を待っている |
+| `ready-for-agent`          | `ready-for-agent`    | 完全に仕様化済みで、AFK エージェントの準備が整っている |
+| `ready-for-human`          | `ready-for-human`    | 人間による実装が必要 |
+| `wontfix`                  | `wontfix`            | 対応しない |
 
-When a skill mentions a role (e.g. "apply the AFK-ready triage label"), use the corresponding label string from this table.
+スキルがロールに言及したとき（例：「AFK 対応可能のトリアージラベルを付ける」）は、この表の対応するラベル文字列を使う。
 
-Edit the right-hand column to match whatever vocabulary you actually use.
+右の列を、あなたが実際に使っている語彙に合わせて編集すること。
