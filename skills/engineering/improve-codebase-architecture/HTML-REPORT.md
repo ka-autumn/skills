@@ -1,15 +1,15 @@
-# HTML Report Format
+# HTML レポートの形式（HTML Report Format）
 
-The architectural review is rendered as a single self-contained HTML file in the OS temp directory. Tailwind and Mermaid both come from CDNs. Mermaid handles graph-shaped diagrams reliably; hand-built divs and inline SVG handle the more editorial visuals (mass diagrams, cross-sections). Mix the two — don't lean on Mermaid for everything, it'll start to look generic.
+アーキテクチャレビューは、OS の一時ディレクトリに置かれる単一の自己完結した HTML ファイルとして描画される。Tailwind と Mermaid はどちらも CDN から読み込む。Mermaid はグラフ状の図を確実に扱える。手作りの div とインライン SVG は、より編集的なビジュアル（質量図、断面図）を扱う。両者を混在させること——すべてを Mermaid に頼らないこと。そうしないと、ありきたりに見えはじめる。
 
-## Scaffold
+## 骨組み（Scaffold）
 
 ```html
 <!doctype html>
-<html lang="en">
+<html lang="ja">
   <head>
     <meta charset="utf-8" />
-    <title>Architecture review — {{repo name}}</title>
+    <title>アーキテクチャレビュー — {{repo name}}</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script type="module">
       import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs";
@@ -33,34 +33,34 @@ The architectural review is rendered as a single self-contained HTML file in the
 </html>
 ```
 
-## Header
+## ヘッダー（Header）
 
-Repo name, date, and a compact legend: solid box = module, dashed line = seam, red arrow = leakage, thick dark box = deep module. No introduction paragraph — straight into the candidates.
+リポジトリ名、日付、そしてコンパクトな凡例：実線のボックス＝モジュール、破線＝seam、赤い矢印＝漏れ（leakage）、太い濃色のボックス＝深いモジュール。導入の段落は置かない——そのまま候補に入る。
 
-## Candidate card
+## 候補カード（Candidate card）
 
-The diagrams carry the weight. Prose is sparse, plain, and uses the glossary terms ([LANGUAGE.md](LANGUAGE.md)) without ceremony.
+図が中心的な役割を担う。地の文は控えめかつ平易で、用語集（[LANGUAGE.md](LANGUAGE.md)）の用語を、もったいぶらずに使う。
 
-Each candidate is one `<article>`:
+各候補は 1 つの `<article>` とする：
 
-- **Title** — short, names the deepening (e.g. "Collapse the Order intake pipeline").
-- **Badge row** — recommendation strength (`Strong` = emerald, `Worth exploring` = amber, `Speculative` = slate), plus a tag for the dependency category (`in-process`, `local-substitutable`, `ports & adapters`, `mock`).
-- **Files** — monospaced list, `font-mono text-sm`.
-- **Before / After diagram** — the centrepiece. Two columns, side by side. See patterns below.
-- **Problem** — one sentence. What hurts.
-- **Solution** — one sentence. What changes.
-- **Wins** — bullets, ≤6 words each. e.g. "Tests hit one interface", "Pricing logic stops leaking", "Delete 4 shallow wrappers".
-- **ADR callout** (if applicable) — one line in an amber-tinted box.
+- **タイトル（Title）** — 短く、深化に名前を付ける（例：「Order 受け入れパイプラインを畳む」）。
+- **バッジ行（Badge row）** — 提案の強さ（`強く推奨（Strong）`＝emerald、`検討の価値あり（Worth exploring）`＝amber、`仮説段階（Speculative）`＝slate）、加えて依存関係の分類のタグ（`in-process`、`local-substitutable`、`ports & adapters`、`mock`）。
+- **ファイル（Files）** — 等幅のリスト、`font-mono text-sm`。
+- **ビフォー／アフター図（Before / After diagram）** — 中心となる要素。2 列を横に並べる。下記のパターンを参照。
+- **課題（Problem）** — 一文。何が痛みか。
+- **解決策（Solution）** — 一文。何が変わるか。
+- **成果（Wins）** — 箇条書き、各 6 語以内。例：「テストが 1 つのインターフェースに当たる」「価格ロジックの漏れが止まる」「浅いラッパーを 4 つ削除」。
+- **ADR コールアウト（ADR callout）**（該当する場合）— amber 系の色のボックスに一行。
 
-No paragraphs of explanation. If the diagram needs a paragraph to be understood, redraw the diagram.
+説明の段落は書かない。図を理解するのに段落が必要なら、図を描き直すこと。
 
-## Diagram patterns
+## 図のパターン（Diagram patterns）
 
-Pick the pattern that fits the candidate. Mix them. Don't make every diagram look the same — variety is part of the point.
+候補に合うパターンを選ぶこと。それらを混在させること。すべての図を同じ見た目にしないこと——多様性も要点の 1 つである。
 
-### Mermaid graph (the workhorse for dependencies / call flow)
+### Mermaid グラフ（依存関係／コールフローの主力）
 
-Use a Mermaid `flowchart` or `graph` when the point is "X calls Y calls Z, and look at the mess." Wrap it in a Tailwind-styled card so it doesn't feel parachuted in. Style with classDef to colour leakage edges red and the deep module dark. Sequence diagrams work well for "before: 6 round-trips; after: 1."
+「X が Y を呼び、Y が Z を呼び、ほら、この混乱ぶり」を伝えたいときは、Mermaid の `flowchart` または `graph` を使う。唐突に貼り付けた感じにならないよう、Tailwind でスタイリングしたカードで包む。classDef でスタイルを付け、漏れ（leakage）のエッジを赤く、深いモジュールを濃色にする。シーケンス図は「ビフォー：6 回の往復、アフター：1 回」を示すのに向いている。
 
 ```html
 <div class="rounded-lg border border-slate-200 bg-white p-4">
@@ -75,49 +75,49 @@ Use a Mermaid `flowchart` or `graph` when the point is "X calls Y calls Z, and l
 </div>
 ```
 
-### Hand-built boxes-and-arrows (when Mermaid's layout fights you)
+### 手作りのボックスと矢印（Mermaid のレイアウトが言うことを聞かないとき）
 
-Modules as `<div>`s with borders and labels. Arrows as inline SVG `<line>` or `<path>` elements positioned absolutely over a relative container. Reach for this when you want the "after" diagram to feel like one thick-bordered deep module with greyed-out internals — Mermaid won't render that with the right weight.
+モジュールを、枠線とラベルを付けた `<div>` で表す。矢印は、relative なコンテナの上に absolute で配置したインライン SVG の `<line>` や `<path>` 要素で表す。「アフター」の図を、内部がグレーアウトされた 1 つの太枠の深いモジュールのように見せたいときに、これを使う——Mermaid では適切な重みで描画できない。
 
-### Cross-section (good for layered shallowness)
+### 断面図（層状の浅さに向く）
 
-Stack horizontal bands (`h-12 border-l-4`) to show layers a call passes through. Before: 6 thin layers each doing nothing. After: 1 thick band labelled with the consolidated responsibility.
+呼び出しが通過する層を示すために、水平の帯（`h-12 border-l-4`）を積み重ねる。ビフォー：6 つの薄い層が、それぞれ何もしていない。アフター：統合された責務をラベルに記した、1 つの太い帯。
 
-### Mass diagram (good for "interface as wide as implementation")
+### 質量図（「インターフェースが実装と同じ幅」に向く）
 
-Two rectangles per module — one for interface surface area, one for implementation. Before: interface rectangle is nearly as tall as the implementation rectangle (shallow). After: interface rectangle is short, implementation rectangle is tall (deep).
+モジュールごとに 2 つの長方形——1 つはインターフェースの表面積、もう 1 つは実装。ビフォー：インターフェースの長方形が、実装の長方形とほぼ同じ高さ（浅い）。アフター：インターフェースの長方形は低く、実装の長方形は高い（深い）。
 
-### Call-graph collapse
+### コールグラフの畳み込み
 
-Before: a tree of function calls rendered as nested boxes. After: the same tree collapsed into one box, with the now-internal calls shown faded inside it.
+ビフォー：関数呼び出しのツリーを、入れ子のボックスとして描く。アフター：同じツリーを 1 つのボックスに畳み込み、いまや内部となった呼び出しを、その中に薄く表示する。
 
-## Style guidance
+## スタイルの指針（Style guidance）
 
-- Lean editorial, not corporate-dashboard. Generous whitespace. Serif optional for headings (`font-serif` works well with stone/slate).
-- Colour sparingly: one accent (emerald or indigo) plus red for leakage and amber for warnings.
-- Keep diagrams ~320px tall so before/after sits comfortably side by side without scrolling.
-- Use `text-xs uppercase tracking-wider` for module labels inside diagrams — they should read as schematic, not as UI.
-- The only scripts are the Tailwind CDN and the Mermaid ESM import. The report is otherwise static — no app code, no interactivity beyond Mermaid's own rendering.
+- 企業のダッシュボードではなく、編集的に寄せること。余白をたっぷり取る。見出しにはセリフ体も可（`font-serif` は stone/slate とよく合う）。
+- 色は控えめに：アクセント 1 色（emerald か indigo）に加えて、漏れには赤、警告には amber。
+- ビフォー／アフターがスクロールなしで横に快適に並ぶよう、図は高さ約 320px に保つ。
+- 図の中のモジュールのラベルには `text-xs uppercase tracking-wider` を使う——UI ではなく、図式として読めるようにする。
+- スクリプトは Tailwind CDN と Mermaid の ESM インポートだけ。それ以外はレポートは静的である——アプリのコードはなく、Mermaid 自身の描画を超えるインタラクティブ性もない。
 
-## Top recommendation section
+## 最優先の提案セクション（Top recommendation section）
 
-One larger card. Candidate name, one sentence on why, anchor link to its card. That's it.
+大きめのカードを 1 つ。候補名、理由を一文、そのカードへのアンカーリンク。それだけ。
 
-## Tone
+## トーン（Tone）
 
-Plain English, concise — but the architectural nouns and verbs come straight from [LANGUAGE.md](LANGUAGE.md). Concision is not an excuse to drift.
+平易な日本語で、簡潔に——ただし、アーキテクチャの名詞と動詞は [LANGUAGE.md](LANGUAGE.md) からそのまま使う。簡潔さは、用語がぶれてよい言い訳にはならない。
 
-**Use exactly:** module, interface, implementation, depth, deep, shallow, seam, adapter, leverage, locality.
+**正確に次の語を使う：** モジュール（module）、インターフェース（interface）、実装（implementation）、深さ（depth）、深い（deep）、浅い（shallow）、seam、アダプター（adapter）、レバレッジ（leverage）、局所性（locality）。
 
-**Never substitute:** component, service, unit (for module) · API, signature (for interface) · boundary (for seam) · layer, wrapper (for module, when you mean module).
+**決して次の語で置き換えない：** component、service、unit（module の代わりに）・API、signature（interface の代わりに）・boundary（seam の代わりに）・layer、wrapper（module を意味するときに）。
 
-**Phrasings that fit the style:**
+**このスタイルに合う言い回し：**
 
-- "Order intake module is shallow — interface nearly matches the implementation."
-- "Pricing leaks across the seam."
-- "Deepen: one interface, one place to test."
-- "Two adapters justify the seam: HTTP in prod, in-memory in tests."
+- 「Order 受け入れモジュールは浅い——インターフェースが実装とほぼ一致している。」
+- 「価格ロジックが seam を越えて漏れている。」
+- 「深化する：1 つのインターフェース、テストする場所は 1 つ。」
+- 「2 つのアダプターが seam を正当化する：本番では HTTP、テストではインメモリ。」
 
-**Wins bullets** name the gain in glossary terms: *"locality: bugs concentrate in one module"*, *"leverage: one interface, N call sites"*, *"interface shrinks; implementation absorbs the wrappers"*. Don't write *"easier to maintain"* or *"cleaner code"* — those terms aren't in the glossary and don't earn their place.
+**成果（Wins）の箇条書き**は、利得を用語集の語で言い表す：*「局所性：バグが 1 つのモジュールに集中する」*、*「レバレッジ：1 つのインターフェース、N 個の呼び出し箇所」*、*「インターフェースが縮み、実装がラッパーを吸収する」*。*「保守しやすくなる」*や*「コードがきれいになる」*とは書かないこと——これらの語は用語集になく、載せる資格がない。
 
-No hedging, no throat-clearing, no "it's worth noting that…". If a sentence could be a bullet, make it a bullet. If a bullet could be cut, cut it. If a term isn't in [LANGUAGE.md](LANGUAGE.md), reach for one that is before inventing a new one.
+ぼかしも、前置きも、「〜という点は注目に値する」もなし。文が箇条書きにできるなら、箇条書きにすること。箇条書きが削れるなら、削ること。ある語が [LANGUAGE.md](LANGUAGE.md) にないなら、新しい語を考案する前に、用語集にある語に手を伸ばすこと。

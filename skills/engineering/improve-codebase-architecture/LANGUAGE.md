@@ -1,53 +1,53 @@
-# Language
+# 言語（Language）
 
-Shared vocabulary for every suggestion this skill makes. Use these terms exactly — don't substitute "component," "service," "API," or "boundary." Consistent language is the whole point.
+このスキルが行うすべての提案で共有する語彙。これらの用語を正確に使うこと——"component"・"service"・"API"・"boundary" で置き換えないこと。言語の一貫性こそがすべての要点である。
 
-## Terms
+## 用語（Terms）
 
-**Module**
-Anything with an interface and an implementation. Deliberately scale-agnostic — applies equally to a function, class, package, or tier-spanning slice.
-_Avoid_: unit, component, service.
+**モジュール（Module）**
+インターフェースと実装を持つものすべて。意図的にスケールに依存しない——関数、クラス、パッケージ、層をまたぐスライスのいずれにも等しく当てはまる。
+_避ける語_：unit、component、service。
 
-**Interface**
-Everything a caller must know to use the module correctly. Includes the type signature, but also invariants, ordering constraints, error modes, required configuration, and performance characteristics.
-_Avoid_: API, signature (too narrow — those refer only to the type-level surface).
+**インターフェース（Interface）**
+呼び出し側がモジュールを正しく使うために知っておくべきすべて。型シグネチャを含むが、それだけでなく、不変条件、順序の制約、エラーモード、必要な設定、性能特性も含む。
+_避ける語_：API、signature（狭すぎる——これらは型レベルの表層しか指さない）。
 
-**Implementation**
-What's inside a module — its body of code. Distinct from **Adapter**: a thing can be a small adapter with a large implementation (a Postgres repo) or a large adapter with a small implementation (an in-memory fake). Reach for "adapter" when the seam is the topic; "implementation" otherwise.
+**実装（Implementation）**
+モジュールの内側にあるもの——そのコード本体。**アダプター（Adapter）**とは区別される：あるものは、大きな実装を持つ小さなアダプター（Postgres リポジトリ）にも、小さな実装を持つ大きなアダプター（インメモリの fake）にもなりうる。seam が話題のときは "adapter"、そうでなければ "implementation" を使うこと。
 
-**Depth**
-Leverage at the interface — the amount of behaviour a caller (or test) can exercise per unit of interface they have to learn. A module is **deep** when a large amount of behaviour sits behind a small interface. A module is **shallow** when the interface is nearly as complex as the implementation.
+**深さ（Depth）**
+インターフェースにおけるレバレッジ——呼び出し側（やテスト）が、学ぶべきインターフェース 1 単位あたりに行使できる振る舞いの量。大量の振る舞いが小さなインターフェースの背後にあるとき、モジュールは**深い**。インターフェースが実装とほぼ同じ複雑さのとき、モジュールは**浅い**。
 
-**Seam** _(from Michael Feathers)_
-A place where you can alter behaviour without editing in that place. The *location* at which a module's interface lives. Choosing where to put the seam is its own design decision, distinct from what goes behind it.
-_Avoid_: boundary (overloaded with DDD's bounded context).
+**Seam** _（Michael Feathers による）_
+その場を編集することなく振る舞いを変えられる場所。モジュールのインターフェースが存在する*位置*。seam をどこに置くかを選ぶことは、その背後に何を置くかとは別個の、それ自体が 1 つの設計上の決定である。
+_避ける語_：boundary（DDD の bounded context と意味が重なり多義的）。
 
-**Adapter**
-A concrete thing that satisfies an interface at a seam. Describes *role* (what slot it fills), not substance (what's inside).
+**アダプター（Adapter）**
+seam でインターフェースを満たす具体物。中身（何が入っているか）ではなく*役割*（どのスロットを埋めるか）を表す。
 
-**Leverage**
-What callers get from depth. More capability per unit of interface they have to learn. One implementation pays back across N call sites and M tests.
+**レバレッジ（Leverage）**
+呼び出し側が深さから得るもの。学ぶべきインターフェース 1 単位あたり、より多くの能力が得られる。1 つの実装が N 個の呼び出し箇所と M 個のテストにわたって元を取る。
 
-**Locality**
-What maintainers get from depth. Change, bugs, knowledge, and verification concentrate at one place rather than spreading across callers. Fix once, fixed everywhere.
+**局所性（Locality）**
+保守側が深さから得るもの。変更・バグ・知識・検証が、呼び出し側に分散するのではなく一箇所に集中する。一度直せば、どこでも直る。
 
-## Principles
+## 原則（Principles）
 
-- **Depth is a property of the interface, not the implementation.** A deep module can be internally composed of small, mockable, swappable parts — they just aren't part of the interface. A module can have **internal seams** (private to its implementation, used by its own tests) as well as the **external seam** at its interface.
-- **The deletion test.** Imagine deleting the module. If complexity vanishes, the module wasn't hiding anything (it was a pass-through). If complexity reappears across N callers, the module was earning its keep.
-- **The interface is the test surface.** Callers and tests cross the same seam. If you want to test *past* the interface, the module is probably the wrong shape.
-- **One adapter means a hypothetical seam. Two adapters means a real one.** Don't introduce a seam unless something actually varies across it.
+- **深さはインターフェースの性質であって、実装の性質ではない。** 深いモジュールは、内部的には小さく、モック可能で、差し替え可能な部品で構成されていてよい——それらがインターフェースの一部でないだけである。モジュールは、インターフェースにおける**外部の seam（external seam）**だけでなく、**内部の seam（internal seam）**（実装に閉じており、そのモジュール自身のテストで使われる）を持つこともある。
+- **削除テスト。** モジュールを削除したと想像してみる。複雑さが消えるなら、そのモジュールは何も隠していなかった（素通りだった）。複雑さが N 個の呼び出し側にわたって再出現するなら、そのモジュールは価値を生んでいた。
+- **インターフェースこそがテストの対象面である。** 呼び出し側もテストも、同じ seam を越える。インターフェースの*向こう側*をテストしたくなるなら、そのモジュールはおそらく形が間違っている。
+- **アダプターが 1 つしかない seam は、単なる仮説上のものにすぎない。アダプターが 2 つ存在して初めて本物の seam となる。** 実際に複数のバリエーションがその seam を挟んで生じるのでない限り、むやみに seam を導入してはいけません。
 
-## Relationships
+## 関係（Relationships）
 
-- A **Module** has exactly one **Interface** (the surface it presents to callers and tests).
-- **Depth** is a property of a **Module**, measured against its **Interface**.
-- A **Seam** is where a **Module**'s **Interface** lives.
-- An **Adapter** sits at a **Seam** and satisfies the **Interface**.
-- **Depth** produces **Leverage** for callers and **Locality** for maintainers.
+- **モジュール**はちょうど 1 つの**インターフェース**を持つ（呼び出し側とテストに対して見せる表層）。
+- **深さ**は**モジュール**の性質であり、その**インターフェース**に対して測られる。
+- **Seam** は**モジュール**の**インターフェース**が存在する場所である。
+- **アダプター**は **seam** に位置し、**インターフェース**を満たす。
+- **深さ**は、呼び出し側に**レバレッジ**を、保守側に**局所性**をもたらす。
 
-## Rejected framings
+## 却下された捉え方（Rejected framings）
 
-- **Depth as ratio of implementation-lines to interface-lines** (Ousterhout): rewards padding the implementation. We use depth-as-leverage instead.
-- **"Interface" as the TypeScript `interface` keyword or a class's public methods**: too narrow — interface here includes every fact a caller must know.
-- **"Boundary"**: overloaded with DDD's bounded context. Say **seam** or **interface**.
+- **深さを「実装の行数とインターフェースの行数の比」とする捉え方**（Ousterhout）：実装を水増しするほど報われてしまう。代わりに「レバレッジとしての深さ」を用いる。
+- **「インターフェース」を TypeScript の `interface` キーワードやクラスの public メソッドとする捉え方**：狭すぎる——ここでのインターフェースは、呼び出し側が知るべきあらゆる事実を含む。
+- **「boundary」**：DDD の bounded context と意味が重なり多義的。**seam** または**インターフェース**と言うこと。

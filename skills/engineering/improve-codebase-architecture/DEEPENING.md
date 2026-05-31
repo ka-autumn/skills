@@ -1,37 +1,37 @@
-# Deepening
+# 深化（Deepening）
 
-How to deepen a cluster of shallow modules safely, given its dependencies. Assumes the vocabulary in [LANGUAGE.md](LANGUAGE.md) — **module**, **interface**, **seam**, **adapter**.
+依存関係を踏まえて、浅いモジュールの集まりを安全に深化させる方法。[LANGUAGE.md](LANGUAGE.md) の語彙——**module**、**interface**、**seam**、**adapter**——を前提とする。
 
-## Dependency categories
+## 依存関係の分類（Dependency categories）
 
-When assessing a candidate for deepening, classify its dependencies. The category determines how the deepened module is tested across its seam.
+深化の候補を評価するときは、その依存関係を分類すること。この分類によって、深化させたモジュールを seam を越えてどうテストするかが決まる。
 
-### 1. In-process
+### 1. In-process（プロセス内）
 
-Pure computation, in-memory state, no I/O. Always deepenable — merge the modules and test through the new interface directly. No adapter needed.
+純粋な計算、インメモリの状態、I/O なし。常に深化可能——モジュールを統合し、新しいインターフェースを通して直接テストする。アダプターは不要。
 
-### 2. Local-substitutable
+### 2. Local-substitutable（ローカルで代替可能）
 
-Dependencies that have local test stand-ins (PGLite for Postgres, in-memory filesystem). Deepenable if the stand-in exists. The deepened module is tested with the stand-in running in the test suite. The seam is internal; no port at the module's external interface.
+ローカルのテスト代替物を持つ依存関係（Postgres に対する PGLite、インメモリのファイルシステム）。代替物が存在すれば深化可能。深化させたモジュールは、テストスイート内で代替物を動かしてテストする。seam は内部にあり、モジュールの外部インターフェースには port を置かない。
 
-### 3. Remote but owned (Ports & Adapters)
+### 3. Remote but owned（リモートだが自前）（Ports & Adapters）
 
-Your own services across a network boundary (microservices, internal APIs). Define a **port** (interface) at the seam. The deep module owns the logic; the transport is injected as an **adapter**. Tests use an in-memory adapter. Production uses an HTTP/gRPC/queue adapter.
+ネットワーク境界を越えた自前のサービス（マイクロサービス、内部 API）。seam に **port**（インターフェース）を定義する。深いモジュールがロジックを所有し、トランスポートは **adapter** として注入する。テストはインメモリのアダプターを使い、本番では HTTP/gRPC/キューのアダプターを使う。
 
-Recommendation shape: *"Define a port at the seam, implement an HTTP adapter for production and an in-memory adapter for testing, so the logic sits in one deep module even though it's deployed across a network."*
+提案の形：*「seam に port を定義し、本番用に HTTP アダプターを、テスト用にインメモリアダプターを実装する。そうすれば、ネットワークをまたいでデプロイされていても、ロジックは 1 つの深いモジュールに収まる。」*
 
-### 4. True external (Mock)
+### 4. True external（真の外部）（Mock）
 
-Third-party services (Stripe, Twilio, etc.) you don't control. The deepened module takes the external dependency as an injected port; tests provide a mock adapter.
+自分が制御できないサードパーティのサービス（Stripe、Twilio など）。深化させたモジュールは、外部依存を注入された port として受け取り、テストはモックアダプターを提供する。
 
-## Seam discipline
+## Seam の規律（Seam discipline）
 
-- **One adapter means a hypothetical seam. Two adapters means a real one.** Don't introduce a port unless at least two adapters are justified (typically production + test). A single-adapter seam is just indirection.
-- **Internal seams vs external seams.** A deep module can have internal seams (private to its implementation, used by its own tests) as well as the external seam at its interface. Don't expose internal seams through the interface just because tests use them.
+- **アダプターが 1 つなら仮説上の seam。アダプターが 2 つなら本物の seam。** 少なくとも 2 つのアダプター（通常は本番用＋テスト用）が正当化されない限り、port を導入してはいけません。アダプターが 1 つだけの seam は、単なる間接化にすぎない。
+- **内部の seam と外部の seam。** 深いモジュールは、インターフェースにおける外部の seam だけでなく、内部の seam（実装に閉じており、そのモジュール自身のテストで使われる）を持つこともある。テストが使うからというだけの理由で、内部の seam をインターフェースを通して露出させてはいけません。
 
-## Testing strategy: replace, don't layer
+## テスト戦略：層を重ねるのではなく、置き換える（replace, don't layer）
 
-- Old unit tests on shallow modules become waste once tests at the deepened module's interface exist — delete them.
-- Write new tests at the deepened module's interface. The **interface is the test surface**.
-- Tests assert on observable outcomes through the interface, not internal state.
-- Tests should survive internal refactors — they describe behaviour, not implementation. If a test has to change when the implementation changes, it's testing past the interface.
+- 浅いモジュールに対する古いユニットテストは、深化させたモジュールのインターフェースにテストが存在するようになれば不要物になる——削除すること。
+- 深化させたモジュールのインターフェースに新しいテストを書くこと。**インターフェースこそがテストの対象面である**。
+- テストは、内部状態ではなく、インターフェースを通して観測できる結果について検証する。
+- テストは内部のリファクタリングを生き延びるべきである——テストは実装ではなく振る舞いを記述する。実装が変わったときにテストも変えなければならないなら、それはインターフェースの向こう側をテストしている。
