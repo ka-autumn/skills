@@ -1,32 +1,32 @@
 ---
 name: tdd
-description: Test-driven development with red-green-refactor loop. Use when user wants to build features or fix bugs using TDD, mentions "red-green-refactor", wants integration tests, or asks for test-first development.
+description: red-green-refactor ループによるテスト駆動開発（test-driven development）。ユーザーが TDD で機能を作る・バグを直す、「red-green-refactor」に言及する、結合テストを求める、テストファーストの開発を求める場合に使用。
 ---
 
-# Test-Driven Development
+# テスト駆動開発（Test-Driven Development）
 
-## Philosophy
+## 設計思想（Philosophy）
 
-**Core principle**: Tests should verify behavior through public interfaces, not implementation details. Code can change entirely; tests shouldn't.
+**基本原則（Core principle）**：テストは実装の詳細ではなく、公開インターフェースを通して振る舞いを検証すべきである。コードは全面的に変わってよいが、テストは変わるべきではない。
 
-**Good tests** are integration-style: they exercise real code paths through public APIs. They describe _what_ the system does, not _how_ it does it. A good test reads like a specification - "user can checkout with valid cart" tells you exactly what capability exists. These tests survive refactors because they don't care about internal structure.
+**良いテスト** は結合スタイルである：公開 API を通して本物のコードパスを動かす。システムが _どのように_ 動くかではなく、_何を_ するかを記述する。良いテストは仕様書のように読める ——「user can checkout with valid cart」（有効なカートでチェックアウトできる）と書かれていれば、どんな機能が存在するかが正確に分かる。こうしたテストは内部構造に関知しないため、リファクタリングに耐える。
 
-**Bad tests** are coupled to implementation. They mock internal collaborators, test private methods, or verify through external means (like querying a database directly instead of using the interface). The warning sign: your test breaks when you refactor, but behavior hasn't changed. If you rename an internal function and tests fail, those tests were testing implementation, not behavior.
+**悪いテスト** は実装に結合している。内部の協働オブジェクトをモックし、private メソッドをテストし、あるいは外部手段を通して検証する（インターフェースを使う代わりにデータベースを直接クエリするなど）。警告サインはこうだ：リファクタリングするとテストが壊れるのに、振る舞いは変わっていない。内部関数の名前を変えただけでテストが失敗するなら、それらのテストは振る舞いではなく実装をテストしていたのだ。
 
-See [tests.md](tests.md) for examples and [mocking.md](mocking.md) for mocking guidelines.
+例については [tests.md](tests.md)、モックの指針については [mocking.md](mocking.md) を参照してください。
 
-## Anti-Pattern: Horizontal Slices
+## アンチパターン：horizontal slices（Anti-Pattern: Horizontal Slices）
 
-**DO NOT write all tests first, then all implementation.** This is "horizontal slicing" - treating RED as "write all tests" and GREEN as "write all code."
+**すべてのテストを先に書き、そのあとにすべての実装を書く、ということをしないでください。** これは「horizontal slicing」であり、RED を「すべてのテストを書くこと」、GREEN を「すべてのコードを書くこと」と捉えるやり方である。
 
-This produces **crap tests**:
+これは **ひどいテスト** を生む：
 
-- Tests written in bulk test _imagined_ behavior, not _actual_ behavior
-- You end up testing the _shape_ of things (data structures, function signatures) rather than user-facing behavior
-- Tests become insensitive to real changes - they pass when behavior breaks, fail when behavior is fine
-- You outrun your headlights, committing to test structure before understanding the implementation
+- まとめて書いたテストは、_実際の_ 振る舞いではなく _想像上の_ 振る舞いをテストする
+- ユーザーから見える振る舞いではなく、ものの _形_（データ構造、関数シグネチャ）をテストする羽目になる
+- テストが本当の変更に鈍感になる —— 振る舞いが壊れても通り、振る舞いが正しくても落ちる
+- 実装を理解する前にテスト構造を固めてしまい、見通せる範囲を超えて先走ることになる
 
-**Correct approach**: Vertical slices via tracer bullets. One test → one implementation → repeat. Each test responds to what you learned from the previous cycle. Because you just wrote the code, you know exactly what behavior matters and how to verify it.
+**正しいアプローチ**：tracer bullets（一気通貫の検証）による vertical slices。1 つのテスト → 1 つの実装 → 繰り返し。各テストは前のサイクルで学んだことに応える。たった今コードを書いたからこそ、どの振る舞いが重要で、それをどう検証すべきかが正確に分かる。
 
 ```
 WRONG (horizontal):
@@ -40,70 +40,70 @@ RIGHT (vertical):
   ...
 ```
 
-## Workflow
+## ワークフロー（Workflow）
 
-### 1. Planning
+### 1. 計画（Planning）
 
-When exploring the codebase, use the project's domain glossary so that test names and interface vocabulary match the project's language, and respect ADRs in the area you're touching.
+コードベースを探索するときは、プロジェクトのドメイン用語集を使い、テスト名やインターフェースの語彙がプロジェクトの言葉と一致するようにし、触れる領域の ADR を尊重してください。
 
-Before writing any code:
+コードを書き始める前に：
 
-- [ ] Confirm with user what interface changes are needed
-- [ ] Confirm with user which behaviors to test (prioritize)
-- [ ] Identify opportunities for [deep modules](deep-modules.md) (small interface, deep implementation)
-- [ ] Design interfaces for [testability](interface-design.md)
-- [ ] List the behaviors to test (not implementation steps)
-- [ ] Get user approval on the plan
+- [ ] 必要なインターフェース変更をユーザーと確認する
+- [ ] どの振る舞いをテストするかをユーザーと確認する（優先順位をつける）
+- [ ] [深いモジュール](deep-modules.md)（小さいインターフェース・深い実装）の機会を見つける
+- [ ] [テストしやすさ](interface-design.md)を意識してインターフェースを設計する
+- [ ] テストする振る舞いを列挙する（実装手順ではなく）
+- [ ] 計画についてユーザーの承認を得る
 
-Ask: "What should the public interface look like? Which behaviors are most important to test?"
+こう尋ねてください：「公開インターフェースはどうあるべきか？ どの振る舞いをテストするのが最も重要か？」
 
-**You can't test everything.** Confirm with the user exactly which behaviors matter most. Focus testing effort on critical paths and complex logic, not every possible edge case.
+**すべてをテストすることはできません。** どの振る舞いが最も重要かを、ユーザーと正確に確認してください。考えうるすべてのエッジケースではなく、クリティカルパスと複雑なロジックにテストの労力を集中させてください。
 
-### 2. Tracer Bullet
+### 2. Tracer Bullet（一気通貫の検証）
 
-Write ONE test that confirms ONE thing about the system:
-
-```
-RED:   Write test for first behavior → test fails
-GREEN: Write minimal code to pass → test passes
-```
-
-This is your tracer bullet - proves the path works end-to-end.
-
-### 3. Incremental Loop
-
-For each remaining behavior:
+システムについて 1 つのことだけを確認する、ただ 1 つのテストを書いてください：
 
 ```
-RED:   Write next test → fails
-GREEN: Minimal code to pass → passes
+RED:   最初の振る舞いのテストを書く → テストが失敗する
+GREEN: 通すための最小限のコードを書く → テストが通る
 ```
 
-Rules:
+これが tracer bullet（一気通貫の検証）であり、経路が端から端まで動くことを証明する。
 
-- One test at a time
-- Only enough code to pass current test
-- Don't anticipate future tests
-- Keep tests focused on observable behavior
+### 3. 反復ループ（Incremental Loop）
 
-### 4. Refactor
-
-After all tests pass, look for [refactor candidates](refactoring.md):
-
-- [ ] Extract duplication
-- [ ] Deepen modules (move complexity behind simple interfaces)
-- [ ] Apply SOLID principles where natural
-- [ ] Consider what new code reveals about existing code
-- [ ] Run tests after each refactor step
-
-**Never refactor while RED.** Get to GREEN first.
-
-## Checklist Per Cycle
+残りの振る舞いそれぞれについて：
 
 ```
-[ ] Test describes behavior, not implementation
-[ ] Test uses public interface only
-[ ] Test would survive internal refactor
-[ ] Code is minimal for this test
-[ ] No speculative features added
+RED:   次のテストを書く → 失敗する
+GREEN: 通すための最小限のコード → 通る
+```
+
+ルール：
+
+- 一度に 1 つのテスト
+- 現在のテストを通すのに必要なだけのコード
+- 将来のテストを先取りしない
+- テストは観察可能な振る舞いに集中させる
+
+### 4. リファクタリング（Refactor）
+
+すべてのテストが通ったら、[リファクタリングの候補](refactoring.md)を探してください：
+
+- [ ] 重複を抽出する
+- [ ] モジュールを深くする（複雑さをシンプルなインターフェースの裏に移す）
+- [ ] 自然な箇所で SOLID 原則を適用する
+- [ ] 新しいコードによって明らかになった既存コードの問題について検討する
+- [ ] リファクタリングの各ステップのあとにテストを実行する
+
+**RED の間は決してリファクタリングしないでください。** まず GREEN にすること。
+
+## サイクルごとのチェックリスト（Checklist Per Cycle）
+
+```
+[ ] テストは実装ではなく振る舞いを記述している
+[ ] テストは公開インターフェースのみを使っている
+[ ] テストは内部のリファクタリングに耐えられる
+[ ] コードはこのテストに対して最小限である
+[ ] 投機的な機能を追加していない
 ```
